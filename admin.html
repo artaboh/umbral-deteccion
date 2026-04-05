@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Umbral de deteccion</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg1: #f7f9ff;
+      --bg2: #edf4f0;
+      --surface: #ffffff;
+      --border: #d8e0ee;
+      --ink: #1c2534;
+      --muted: #57647c;
+      --accent: #0f6a9d;
+      --ok: #187748;
+      --bad: #a42932;
+      --gris: #6d6d6d;
+      --rojo: #a12626;
+      --verde: #1f7a43;
+      --azul: #1d4f9c;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      font-family: "Trebuchet MS", "Lucida Sans Unicode", sans-serif;
+      color: var(--ink);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+    }
+
+    .wrap {
+      width: min(1080px, 96vw);
+      margin: 1rem auto 1.5rem;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.7rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: 1px solid #b9cee3;
+      border-radius: 999px;
+      padding: 0.35rem 0.7rem;
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      background: #f3f9ff;
+    }
+
+    .badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .author {
+      margin: 0;
+      color: var(--muted);
+      font-style: italic;
+      font-size: 0.86rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9rem;
+      box-shadow: 0 12px 28px rgba(26, 44, 71, 0.08);
+      margin-bottom: 0.75rem;
+    }
+
+    h1, h2, h3, p { margin: 0.3rem 0 0.7rem; }
+
+    h1 {
+      font-size: clamp(1.4rem, 4vw, 2rem);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      align-items: center;
+    }
+
+    .btn {
+      min-height: 42px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #eef4fb;
+      color: var(--ink);
+      font: inherit;
+      font-weight: 700;
+      padding: 0.5rem 0.8rem;
+      cursor: pointer;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #f8fbff;
+      border-color: #0a4f75;
+    }
+
+    #status {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    #status.ok { color: var(--ok); }
+    #status.err { color: var(--bad); }
+
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.6rem;
+    }
+
+    .mini {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.55rem;
+      background: #fbfdff;
+    }
+
+    .mini h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .mini p {
+      color: var(--muted);
+      margin: 0.2rem 0;
+      font-size: 0.85rem;
+    }
+
+    .c-gris { color: var(--gris); }
+    .c-rojo { color: var(--rojo); }
+    .c-verde { color: var(--verde); }
+    .c-azul { color: var(--azul); }
+
+    .chart-wrap {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fcfdff;
+      padding: 0.5rem;
+      height: min(420px, 56vh);
+    }
+
+    .note {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .rank-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+
+    .rank-tab {
+      min-height: 34px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.22rem 0.72rem;
+      cursor: pointer;
+    }
+
+    .rank-tab.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: #edf7ff;
+    }
+
+    .rank-list {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .rank-row {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      gap: 0.6rem;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.45rem 0.6rem;
+      background: #fff;
+    }
+
+    .rank-pos {
+      text-align: center;
+      font-weight: 700;
+      color: #74809a;
+    }
+
+    .rank-name {
+      font-weight: 700;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .rank-meta {
+      margin-top: 0.15rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .rank-value {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    @media (max-width: 920px) {
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 580px) {
+      .grid4 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="top">
+      <span class="badge">NyPE - 2026 | Admin</span>
+      <p class="author">Realizado por Guillermo Solovey</p>
+    </section>
+
+    <section class="card">
+      <h1>Panel de resultados - Umbral de deteccion</h1>
+      <p class="note">Muestra sesiones guardadas en Supabase (excluye NA para analisis de umbral).</p>
+      <div class="controls">
+        <button id="refresh-btn" class="btn btn-primary">Actualizar datos</button>
+        <span id="status">Sin cargar</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Resumen por color</h2>
+      <div id="summary-grid" class="grid4"></div>
+    </section>
+
+    <section class="card">
+      <h2>Boxplots de umbral por color</h2>
+      <p id="density-note" class="note">
+        Se grafica cada color solo si tiene al menos 10 umbrales validos (estimado, sin NA).
+      </p>
+      <div class="chart-wrap">
+        <canvas id="density-chart"></canvas>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ranking por color (menor umbral = mejor posicion)</h2>
+      <div class="rank-tabs" role="group" aria-label="Filtrar ranking por color">
+        <button type="button" class="rank-tab active" data-color="Gris">Gris</button>
+        <button type="button" class="rank-tab" data-color="Rojo">Rojo</button>
+        <button type="button" class="rank-tab" data-color="Verde">Verde</button>
+        <button type="button" class="rank-tab" data-color="Azul">Azul</button>
+      </div>
+      <div id="rank-list" class="rank-list"></div>
+    </section>
+  </main>
+
+  <script>
+    const SUPABASE_URL = "TU_SUPABASE_URL_AQUI";
+    const SUPABASE_KEY = "TU_SUPABASE_KEY_AQUI";
+    const SUPABASE_TABLE = "edge_threshold_sessions";
+    const HAS_JWT = SUPABASE_KEY.includes(".");
+    const REST_URL = `${SUPABASE_URL.replace(/\/$/, "")}/rest/v1/${SUPABASE_TABLE}`;
+    const HEADERS = {
+      "Content-Type": "application/json",
+      apikey: SUPABASE_KEY,
+      ...(HAS_JWT ? { Authorization: `Bearer ${SUPABASE_KEY}` } : {})
+    };
+
+    const COLORS = ["Gris", "Rojo", "Verde", "Azul"];
+    const COLOR_META = {
+      Gris: { css: "#6d6d6d", className: "c-gris" },
+      Rojo: { css: "#a12626", className: "c-rojo" },
+      Verde: { css: "#1f7a43", className: "c-verde" },
+      Azul: { css: "#1d4f9c", className: "c-azul" }
+    };
+
+    const state = {
+      rows: [],
+      rankingColor: "Gris",
+      boxplotSummary: []
+    };
+
+    const refs = {
+      refreshBtn: document.getElementById("refresh-btn"),
+      status: document.getElementById("status"),
+      summaryGrid: document.getElementById("summary-grid"),
+      densityCanvas: document.getElementById("density-chart"),
+      densityNote: document.getElementById("density-note"),
+      rankTabs: Array.from(document.querySelectorAll(".rank-tab")),
+      rankList: document.getElementById("rank-list")
+    };
+
+    refs.refreshBtn.addEventListener("click", loadData);
+    refs.rankTabs.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const color = btn.dataset.color;
+        if (!color) return;
+        state.rankingColor = color;
+        refs.rankTabs.forEach((b) => b.classList.toggle("active", b.dataset.color === color));
+        renderRanking();
+      });
+    });
+
+    void loadData();
+    window.addEventListener("resize", () => {
+      if (state.boxplotSummary.length) {
+        drawBoxplot(state.boxplotSummary);
+      }
+    });
+
+    async function loadData() {
+      setStatus("Cargando datos...", "");
+      const params = new URLSearchParams({
+        select: "id,participant_name,color_mode,threshold_value,threshold_status,created_at",
+        order: "created_at.desc",
+        limit: "5000"
+      });
+
+      try {
+        const response = await fetch(`${REST_URL}?${params.toString()}`, { headers: HEADERS });
+        if (!response.ok) {
+          const detail = await response.text();
+          throw new Error(`HTTP ${response.status}: ${detail}`);
+        }
+        const rows = await response.json();
+        state.rows = Array.isArray(rows) ? rows : [];
+        renderAll();
+        setStatus(`Datos cargados (${state.rows.length} sesiones totales).`, "ok");
+      } catch (error) {
+        setStatus("Error al cargar datos de Supabase.", "err");
+        refs.summaryGrid.innerHTML = "<p class='note'>No se pudo leer la tabla de resultados.</p>";
+        refs.rankList.innerHTML = "<p class='note'>Ranking no disponible por error de conexion.</p>";
+        clearChart();
+      }
+    }
+
+    function renderAll() {
+      renderSummary();
+      renderDensity();
+      renderRanking();
+    }
+
+    function getValidRows(color) {
+      return state.rows.filter((r) =>
+        r.color_mode === color &&
+        r.threshold_status === "estimado" &&
+        r.threshold_value !== null &&
+        Number.isFinite(Number(r.threshold_value))
+      );
+    }
+
+    function getInvalidRows(color) {
+      return state.rows.filter((r) =>
+        r.color_mode === color &&
+        r.threshold_status !== "estimado"
+      );
+    }
+
+    function renderSummary() {
+      refs.summaryGrid.innerHTML = "";
+      COLORS.forEach((color) => {
+        const validRows = getValidRows(color);
+        const invalidRows = getInvalidRows(color);
+        const n = validRows.length;
+        const mean = n > 0
+          ? validRows.reduce((acc, r) => acc + Number(r.threshold_value), 0) / n
+          : null;
+
+        const card = document.createElement("article");
+        card.className = "mini";
+        card.innerHTML = `
+          <h3 class="${COLOR_META[color].className}">${color}</h3>
+          <p>N validos: <strong>${n}</strong></p>
+          <p>Promedio umbral: <strong>${mean !== null ? mean.toFixed(2) : "-"}</strong></p>
+          <p>NA: <strong>${invalidRows.length}</strong></p>
+          <p>${n >= 10 ? "Listo para boxplot." : "Necesita al menos 10 para boxplot."}</p>
+        `;
+        refs.summaryGrid.appendChild(card);
+      });
+    }
+
+    function renderDensity() {
+      const eligible = COLORS.filter((color) => getValidRows(color).length >= 10);
+      if (!eligible.length) {
+        refs.densityNote.textContent =
+          "No hay colores con n >= 10 de umbral valido. Aun no se puede graficar boxplots.";
+        clearChart();
+        return;
+      }
+
+      const summary = eligible.map((color) => {
+        const values = getValidRows(color)
+          .map((r) => Number(r.threshold_value))
+          .filter((v) => Number.isFinite(v))
+          .sort((a, b) => a - b);
+        return { color, n: values.length, ...computeBoxStats(values) };
+      });
+
+      summary.sort((a, b) => a.median - b.median);
+      state.boxplotSummary = summary;
+      drawBoxplot(summary);
+
+      refs.densityNote.textContent =
+        "Boxplots por color ordenados de menor a mayor mediana de umbral.";
+    }
+
+    function computeBoxStats(sortedValues) {
+      const min = sortedValues[0];
+      const max = sortedValues[sortedValues.length - 1];
+      const q1 = quantile(sortedValues, 0.25);
+      const median = quantile(sortedValues, 0.5);
+      const q3 = quantile(sortedValues, 0.75);
+      return { min, q1, median, q3, max };
+    }
+
+    function quantile(sortedValues, q) {
+      const pos = (sortedValues.length - 1) * q;
+      const base = Math.floor(pos);
+      const rest = pos - base;
+      const next = sortedValues[base + 1];
+      if (next !== undefined) {
+        return sortedValues[base] + rest * (next - sortedValues[base]);
+      }
+      return sortedValues[base];
+    }
+
+    function drawBoxplot(summary) {
+      const canvas = refs.densityCanvas;
+      const host = canvas.parentElement;
+      const hostRect = host.getBoundingClientRect();
+      const width = Math.max(320, Math.floor(hostRect.width));
+      const height = Math.max(260, Math.floor(hostRect.height));
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      const ctx = canvas.getContext("2d");
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      const pad = { top: 18, right: 22, bottom: 62, left: 58 };
+      const plotW = width - pad.left - pad.right;
+      const plotH = height - pad.top - pad.bottom;
+
+      const globalQ1 = Math.min(...summary.map((s) => s.q1));
+      const globalQ3 = Math.max(...summary.map((s) => s.q3));
+      const span = Math.max(1e-6, globalQ3 - globalQ1);
+      const yMin = globalQ1 - span * 0.15;
+      const yMax = globalQ3 + span * 0.15;
+      const toY = (v) => pad.top + ((yMax - v) / (yMax - yMin)) * plotH;
+
+      const ticks = niceTicks(yMin, yMax, 6);
+      ctx.strokeStyle = "#e4eaf5";
+      ctx.lineWidth = 1;
+      ticks.forEach((t) => {
+        const y = toY(t);
+        ctx.beginPath();
+        ctx.moveTo(pad.left, y);
+        ctx.lineTo(width - pad.right, y);
+        ctx.stroke();
+      });
+
+      ctx.fillStyle = "#55637d";
+      ctx.font = "12px Trebuchet MS";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ticks.forEach((t) => {
+        ctx.fillText(t.toFixed(2).replace(/\.00$/, ""), pad.left - 8, toY(t));
+      });
+
+      ctx.strokeStyle = "#8ea0bc";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(pad.left, pad.top);
+      ctx.lineTo(pad.left, height - pad.bottom);
+      ctx.lineTo(width - pad.right, height - pad.bottom);
+      ctx.stroke();
+
+      const n = summary.length;
+      const step = plotW / n;
+      const boxW = Math.min(56, step * 0.52);
+
+      summary.forEach((s, idx) => {
+        const x = pad.left + step * idx + step / 2;
+        const color = COLOR_META[s.color].css;
+        const stroke = color;
+        const fill = hexToRgba(color, 0.24);
+
+        const yQ1 = toY(s.q1);
+        const yMed = toY(s.median);
+        const yQ3 = toY(s.q3);
+
+        ctx.fillStyle = fill;
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.rect(x - boxW / 2, yQ3, boxW, yQ1 - yQ3);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = "#1a2231";
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        ctx.moveTo(x - boxW / 2, yMed);
+        ctx.lineTo(x + boxW / 2, yMed);
+        ctx.stroke();
+
+        ctx.fillStyle = stroke;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.font = "700 12px Trebuchet MS";
+        ctx.fillText(s.color, x, height - pad.bottom + 10);
+        ctx.font = "11px Trebuchet MS";
+        ctx.fillStyle = "#5c6881";
+        ctx.fillText(`n=${s.n}`, x, height - pad.bottom + 26);
+      });
+
+      ctx.save();
+      ctx.translate(16, pad.top + plotH / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#4d5a73";
+      ctx.font = "12px Trebuchet MS";
+      ctx.fillText("Umbral de deteccion", 0, 0);
+      ctx.restore();
+
+      ctx.fillStyle = "#4d5a73";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "alphabetic";
+      ctx.font = "12px Trebuchet MS";
+      ctx.fillText("Colores (ordenados por mediana ascendente)", pad.left + plotW / 2, height - 10);
+    }
+
+    function niceTicks(min, max, count) {
+      if (!Number.isFinite(min) || !Number.isFinite(max)) return [0];
+      if (min === max) return [min];
+      const rawStep = (max - min) / Math.max(1, count - 1);
+      const mag = Math.pow(10, Math.floor(Math.log10(rawStep)));
+      const norm = rawStep / mag;
+      let step;
+      if (norm < 1.5) step = 1 * mag;
+      else if (norm < 3) step = 2 * mag;
+      else if (norm < 7) step = 5 * mag;
+      else step = 10 * mag;
+
+      const start = Math.floor(min / step) * step;
+      const end = Math.ceil(max / step) * step;
+      const ticks = [];
+      for (let v = start; v <= end + step * 0.5; v += step) {
+        ticks.push(v);
+      }
+      return ticks;
+    }
+
+    function hexToRgba(hex, alpha) {
+      const normalized = hex.replace("#", "");
+      const full = normalized.length === 3
+        ? normalized.split("").map((c) => c + c).join("")
+        : normalized;
+      const num = parseInt(full, 16);
+      const r = (num >> 16) & 255;
+      const g = (num >> 8) & 255;
+      const b = num & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function renderRanking() {
+      const rows = getValidRows(state.rankingColor)
+        .slice()
+        .sort((a, b) => Number(a.threshold_value) - Number(b.threshold_value));
+
+      if (!rows.length) {
+        refs.rankList.innerHTML = "<p class='note'>No hay umbrales validos para este color.</p>";
+        return;
+      }
+
+      refs.rankList.innerHTML = "";
+      rows.forEach((row, idx) => {
+        const div = document.createElement("div");
+        div.className = "rank-row";
+        div.innerHTML = `
+          <div class="rank-pos">#${idx + 1}</div>
+          <div>
+            <div class="rank-name">${escapeHtml(row.participant_name || "Anonimo")}</div>
+            <div class="rank-meta">${formatDate(row.created_at)}</div>
+          </div>
+          <div class="rank-value">${Number(row.threshold_value).toFixed(2)}</div>
+        `;
+        refs.rankList.appendChild(div);
+      });
+    }
+
+    function setStatus(message, type) {
+      refs.status.textContent = message;
+      refs.status.classList.remove("ok", "err");
+      if (type) refs.status.classList.add(type);
+    }
+
+    function clearChart() {
+      state.boxplotSummary = [];
+      const canvas = refs.densityCanvas;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function formatDate(value) {
+      if (!value) return "";
+      const d = new Date(value);
+      if (Number.isNaN(d.getTime())) return "";
+      return d.toLocaleString("es-AR");
+    }
+  </script>
+</body>
+</html>

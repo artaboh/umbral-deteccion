@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Experimento de deteccion de bordes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header id="welcome-brand" class="brand-strip">
+    <span class="lab-badge">NyPE - 2026</span>
+    <p class="author-note">Realizado por Guillermo Solovey</p>
+  </header>
+
+  <main class="app">
+    <section id="welcome-screen" class="screen">
+      <div class="card">
+        <h1>Experimento de deteccion de bordes</h1>
+        <p>
+          En cada ensayo vas a ver dos regiones de color muy parecido. Tu tarea es tocar
+          o hacer clic en el lugar donde crees que cambia el color. A veces la diferencia
+          sera muy sutil. Intenta responder lo mejor posible.
+        </p>
+
+        <div class="control-group">
+          <label for="participant-input">Participante (nombre o ID)</label>
+          <input id="participant-input" type="text" maxlength="32" autocomplete="off" placeholder="Ej: P01">
+          <p id="welcome-error" class="alert hidden">Ingresa un nombre o ID para continuar.</p>
+        </div>
+
+        <div class="control-group">
+          <label>Modo de color</label>
+          <div class="mode-buttons" role="group" aria-label="Modo de color">
+            <button type="button" class="mode-btn is-active mode-gris" data-mode="Gris" aria-pressed="true" aria-label="Gris">
+              <span class="mode-label">Gris</span>
+            </button>
+            <button type="button" class="mode-btn mode-rojo" data-mode="Rojo" aria-pressed="false" aria-label="Rojo">
+              <span class="mode-label">Rojo</span>
+            </button>
+            <button type="button" class="mode-btn mode-verde" data-mode="Verde" aria-pressed="false" aria-label="Verde">
+              <span class="mode-label">Verde</span>
+            </button>
+            <button type="button" class="mode-btn mode-azul" data-mode="Azul" aria-pressed="false" aria-label="Azul">
+              <span class="mode-label">Azul</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button id="start-btn" class="btn btn-primary">Comenzar</button>
+          <button id="info-btn" class="btn">Mas informacion</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="info-screen" class="screen hidden">
+      <div class="card">
+        <h2>Que mide este experimento</h2>
+        <p>
+          Esta tarea estima cuanta diferencia de color necesitas para localizar el borde
+          entre dos regiones contiguas.
+        </p>
+        <p>
+          El resultado final es un umbral individual. Un valor mas bajo indica mayor
+          sensibilidad para detectar cambios sutiles en ese canal de color.
+        </p>
+        <p>
+          El umbral se estima a partir de la proporcion de aciertos por nivel de diferencia
+          y un criterio de rendimiento de 0.5.
+        </p>
+        <button id="back-btn" class="btn btn-primary">Volver</button>
+      </div>
+    </section>
+
+    <section id="experiment-screen" class="screen hidden">
+      <div class="top-bar">
+        <p id="trial-progress">Ensayo 1 de 30</p>
+        <p id="trial-instruction">Hace clic donde crees que esta el borde.</p>
+      </div>
+      <div id="stimulus-area" aria-label="Area de estimulo">
+        <div id="region-one" class="region"></div>
+        <div id="region-two" class="region"></div>
+        <canvas id="feedback-canvas"></canvas>
+        <div id="feedback-overlay" class="hidden"></div>
+      </div>
+    </section>
+
+    <section id="results-screen" class="screen hidden">
+      <div class="card">
+        <h2>Resultados</h2>
+        <p id="participant-summary" class="muted-strong"></p>
+        <div class="chart-wrap">
+          <canvas id="results-chart"></canvas>
+        </div>
+        <p id="threshold-text"></p>
+        <p id="interpretation-text">
+          Este grafico muestra como cambio tu desempeno a medida que aumento la diferencia
+          de color entre las dos regiones. El umbral indica aproximadamente el nivel a
+          partir del cual pudiste localizar el borde con mayor confiabilidad.
+        </p>
+        <p id="invalid-text" class="alert hidden">
+          No se pudo estimar el umbral de manera confiable. Por favor, repeti la prueba.
+        </p>
+        <p id="save-status" class="save-status"></p>
+
+        <div class="card ranking-card">
+          <div class="ranking-head">
+            <h3>Ranking por modo</h3>
+            <span id="ranking-status">Sin cargar</span>
+          </div>
+          <div class="ranking-tabs" role="group" aria-label="Filtro de ranking por color">
+            <button type="button" class="ranking-tab is-active" data-ranking-mode="Gris">Gris</button>
+            <button type="button" class="ranking-tab" data-ranking-mode="Rojo">Rojo</button>
+            <button type="button" class="ranking-tab" data-ranking-mode="Verde">Verde</button>
+            <button type="button" class="ranking-tab" data-ranking-mode="Azul">Azul</button>
+          </div>
+          <div id="ranking-list" class="ranking-list"></div>
+        </div>
+
+        <div class="actions">
+          <button id="repeat-btn" class="btn">Repetir este color</button>
+          <button id="other-color-btn" class="btn">Probar otro color</button>
+          <button id="share-btn" class="btn btn-primary">Compartir</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
