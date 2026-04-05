@@ -267,7 +267,7 @@
     <section class="card">
       <h2>Boxplots de umbral por color</h2>
       <p id="density-note" class="note">
-        Se grafica cada color solo si tiene al menos 10 umbrales validos (estimado, sin NA).
+        Se grafica cada color solo si tiene al menos 5 umbrales validos (estimado, sin NA).
       </p>
       <div class="chart-wrap">
         <canvas id="density-chart"></canvas>
@@ -405,17 +405,17 @@
           <p>N validos: <strong>${n}</strong></p>
           <p>Promedio umbral: <strong>${mean !== null ? mean.toFixed(2) : "-"}</strong></p>
           <p>NA: <strong>${invalidRows.length}</strong></p>
-          <p>${n >= 10 ? "Listo para boxplot." : "Necesita al menos 10 para boxplot."}</p>
+          <p>${n >= 5 ? "Listo para boxplot." : "Necesita al menos 5 para boxplot."}</p>
         `;
         refs.summaryGrid.appendChild(card);
       });
     }
 
     function renderDensity() {
-      const eligible = COLORS.filter((color) => getValidRows(color).length >= 10);
+      const eligible = COLORS.filter((color) => getValidRows(color).length >= 5);
       if (!eligible.length) {
         refs.densityNote.textContent =
-          "No hay colores con n >= 10 de umbral valido. Aun no se puede graficar boxplots.";
+          "No hay colores con n >= 5 de umbral valido. Aun no se puede graficar boxplots.";
         clearChart();
         return;
       }
