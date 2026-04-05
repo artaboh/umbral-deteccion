@@ -12,8 +12,8 @@ const MIN_DELTA = 0.25;
 const MAX_DELTA = 127;
 
 // Fill these values to enable Supabase persistence.
-const SUPABASE_URL = "TU_SUPABASE_URL_AQUI";
-const SUPABASE_ANON_KEY = "TU_SUPABASE_KEY_AQUI";
+const SUPABASE_URL = "https://bcjuhfeiifbwvghlmean.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_V-xfLSoa518QdIUciKRxQg_4_4DDdzU";
 const SUPABASE_TABLE = "edge_threshold_sessions";
 const SUPABASE_ENABLED = Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 const SUPABASE_HAS_JWT_KEY = SUPABASE_ANON_KEY.includes(".");
