@@ -18,14 +18,14 @@
         <h1>Experimento de deteccion de bordes</h1>
         <p>
           En cada ensayo vas a ver dos regiones de color muy parecido. Tu tarea es tocar
-          o hacer clic en el lugar donde crees que cambia el color. A veces la diferencia
-          sera muy sutil. Intenta responder lo mejor posible.
+          o hacer clic en el lugar donde creés que cambia el color. A veces la diferencia
+          será muy sutil. Intentá responder lo mejor posible.
         </p>
 
         <div class="control-group">
           <label for="participant-input">Participante (nombre o ID)</label>
           <input id="participant-input" type="text" maxlength="32" autocomplete="off" placeholder="Ej: P01">
-          <p id="welcome-error" class="alert hidden">Ingresa un nombre o ID para continuar.</p>
+          <p id="welcome-error" class="alert hidden">Ingresá un nombre o ID para continuar.</p>
         </div>
 
         <div class="control-group">
@@ -48,24 +48,24 @@
 
         <div class="actions">
           <button id="start-btn" class="btn btn-primary">Comenzar</button>
-          <button id="info-btn" class="btn">Mas informacion</button>
+          <button id="info-btn" class="btn">Más información</button>
         </div>
       </div>
     </section>
 
     <section id="info-screen" class="screen hidden">
       <div class="card">
-        <h2>Que mide este experimento</h2>
+        <h2>Qué mide este experimento</h2>
         <p>
-          Esta tarea estima cuanta diferencia de color necesitas para localizar el borde
+          Esta tarea estima cuánta diferencia de color necesitás para localizar el borde
           entre dos regiones contiguas.
         </p>
         <p>
-          El resultado final es un umbral individual. Un valor mas bajo indica mayor
+          El resultado final es un umbral individual. Un valor más bajo indica mayor
           sensibilidad para detectar cambios sutiles en ese canal de color.
         </p>
         <p>
-          El umbral se estima a partir de la proporcion de aciertos por nivel de diferencia
+          El umbral se estima a partir de la proporción de aciertos por nivel de diferencia
           y un criterio de rendimiento de 0.5.
         </p>
         <button id="back-btn" class="btn btn-primary">Volver</button>
@@ -75,7 +75,7 @@
     <section id="experiment-screen" class="screen hidden">
       <div class="top-bar">
         <p id="trial-progress">Ensayo 1 de 30</p>
-        <p id="trial-instruction">Hace clic donde crees que esta el borde.</p>
+        <p id="trial-instruction">Hacé clic donde creés que está el borde.</p>
       </div>
       <div id="stimulus-area" aria-label="Area de estimulo">
         <div id="region-one" class="region"></div>
@@ -94,12 +94,12 @@
         </div>
         <p id="threshold-text"></p>
         <p id="interpretation-text">
-          Este grafico muestra como cambio tu desempeno a medida que aumento la diferencia
+          Este gráfico muestra cómo cambió tu desempeno a medida que aumentó la diferencia
           de color entre las dos regiones. El umbral indica aproximadamente el nivel a
           partir del cual pudiste localizar el borde con mayor confiabilidad.
         </p>
         <p id="invalid-text" class="alert hidden">
-          No se pudo estimar el umbral de manera confiable. Por favor, repeti la prueba.
+          No se pudo estimar el umbral de manera confiable. Por favor, repetí la prueba.
         </p>
         <p id="save-status" class="save-status"></p>
 
