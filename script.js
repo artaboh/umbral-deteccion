@@ -233,8 +233,8 @@ function runNextTrial() {
 function updateTrialUi() {
   ui.trialProgress.textContent = `Ensayo ${state.trialIndex + 1} de ${TOTAL_TRIALS_PER_BLOCK}`;
   ui.trialInstruction.textContent = state.currentOrientation === "vertical"
-    ? "Hace clic donde crees que esta el borde."
-    : "Toca donde crees que esta el borde.";
+    ? "Hacé clic donde creés que está el borde."
+    : "Tocá donde creés que está el borde.";
 }
 
 function drawStimulus() {
