@@ -287,6 +287,16 @@
   </main>
 
   <script>
+    // --- PEGALO JUSTO ACÁ, AL PRINCIPIO DE ESTE SCRIPT ---
+    const CLAVE_ADMIN = "ECH2026umbrales"; 
+    const intento = prompt("Ingresá la clave para ver los resultados:");
+
+    if (intento !== CLAVE_ADMIN) {
+        document.body.innerHTML = "<h1 style='text-align:center;margin-top:100px;'>Acceso denegado</h1>";
+        window.stop();
+        throw new Error("No autorizado");
+    }
+  // --- FIN DEL BLOQUE DE SEGURIDAD ---
     const SUPABASE_URL = "https://bcjuhfeiifbwvghlmean.supabase.co";
     const SUPABASE_KEY = "sb_publishable_V-xfLSoa518QdIUciKRxQg_4_4DDdzU";
     const SUPABASE_TABLE = "edge_threshold_sessions";
