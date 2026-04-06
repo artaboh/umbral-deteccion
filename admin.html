@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Umbral de deteccion</title>
+  <title>Admin - Umbral de detección</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <style>
     :root {
@@ -252,7 +252,7 @@
 
     <section class="card">
       <h1>Panel de resultados - Umbral de deteccion</h1>
-      <p class="note">Muestra sesiones guardadas en Supabase (excluye NA para analisis de umbral).</p>
+      <p class="note">Muestra sesiones guardadas en Supabase (excluye NA para análisis de umbral).</p>
       <div class="controls">
         <button id="refresh-btn" class="btn btn-primary">Actualizar datos</button>
         <span id="status">Sin cargar</span>
@@ -267,7 +267,7 @@
     <section class="card">
       <h2>Boxplots de umbral por color</h2>
       <p id="density-note" class="note">
-        Se grafica cada color solo si tiene al menos 5 umbrales validos (estimado, sin NA).
+        Se grafica cada color solo si tiene al menos 5 umbrales válidos (estimado, sin NA).
       </p>
       <div class="chart-wrap">
         <canvas id="density-chart"></canvas>
@@ -275,7 +275,7 @@
     </section>
 
     <section class="card">
-      <h2>Ranking por color (menor umbral = mejor posicion)</h2>
+      <h2>Ranking por color (menor umbral = mejor posición)</h2>
       <div class="rank-tabs" role="group" aria-label="Filtrar ranking por color">
         <button type="button" class="rank-tab active" data-color="Gris">Gris</button>
         <button type="button" class="rank-tab" data-color="Rojo">Rojo</button>
@@ -361,7 +361,7 @@
       } catch (error) {
         setStatus("Error al cargar datos de Supabase.", "err");
         refs.summaryGrid.innerHTML = "<p class='note'>No se pudo leer la tabla de resultados.</p>";
-        refs.rankList.innerHTML = "<p class='note'>Ranking no disponible por error de conexion.</p>";
+        refs.rankList.innerHTML = "<p class='note'>Ranking no disponible por error de conexión.</p>";
         clearChart();
       }
     }
@@ -415,7 +415,7 @@
       const eligible = COLORS.filter((color) => getValidRows(color).length >= 5);
       if (!eligible.length) {
         refs.densityNote.textContent =
-          "No hay colores con n >= 5 de umbral valido. Aun no se puede graficar boxplots.";
+          "No hay colores con n >= 5 de umbral válido. Aun no se puede graficar boxplots.";
         clearChart();
         return;
       }
@@ -606,7 +606,7 @@
         .sort((a, b) => Number(a.threshold_value) - Number(b.threshold_value));
 
       if (!rows.length) {
-        refs.rankList.innerHTML = "<p class='note'>No hay umbrales validos para este color.</p>";
+        refs.rankList.innerHTML = "<p class='note'>No hay umbrales válidos para este color.</p>";
         return;
       }
 
@@ -617,7 +617,7 @@
         div.innerHTML = `
           <div class="rank-pos">#${idx + 1}</div>
           <div>
-            <div class="rank-name">${escapeHtml(row.participant_name || "Anonimo")}</div>
+            <div class="rank-name">${escapeHtml(row.participant_name || "Anónimo")}</div>
             <div class="rank-meta">${formatDate(row.created_at)}</div>
           </div>
           <div class="rank-value">${Number(row.threshold_value).toFixed(2)}</div>
