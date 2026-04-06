@@ -532,10 +532,10 @@ function showAdaptiveTransition(direction, previousLevels, nextLevels) {
   drawNeutralBackground();
   clearFeedbackLayer();
   const msg = direction === "harder"
-    ? "Vamos a repetir 30 ensayos con una diferencia de color mas sutil para estimar mejor tu umbral."
+    ? "Vamos a repetir 30 ensayos con una diferencia de color más sutil para estimar mejor tu umbral."
     : "Vamos a repetir 30 ensayos con una diferencia de color mayor para estimar mejor tu umbral.";
 
-  ui.trialProgress.textContent = "Recalibracion en curso";
+  ui.trialProgress.textContent = "Recalibración en curso";
   ui.trialInstruction.textContent = msg;
   ui.feedbackOverlay.textContent =
     `${msg} Ajuste aplicado: ${formatDeltaList(previousLevels)} -> ${formatDeltaList(nextLevels)}.`;
@@ -588,7 +588,7 @@ function finishExperiment(stats, quality) {
   if (discardByMaxAttempts) {
     state.lastSavedRowId = null;
     setSaveStatus(
-      "No se pudo estimar el umbral tras 3 bloques. Esta sesion no se guardo en la base de datos.",
+      "No se pudo estimar el umbral tras 3 bloques. Esta sesión no se guardó en la base de datos.",
       "info"
     );
     void loadRankingForActiveMode();
@@ -727,7 +727,7 @@ function renderResultsChart(stats, curve, thresholdValue) {
 
   const datasets = [
     {
-      label: "Proporcion observada",
+      label: "Proporción observada",
       data: observed,
       borderColor: "#126a9a",
       backgroundColor: "#126a9a",
@@ -783,7 +783,7 @@ function renderResultsChart(stats, curve, thresholdValue) {
   }
 
   if (typeof Chart === "undefined") {
-    ui.thresholdText.textContent += " | No se pudo cargar el grafico.";
+    ui.thresholdText.textContent += " | No se pudo cargar el gráfico.";
     return;
   }
 
@@ -800,7 +800,7 @@ function renderResultsChart(stats, curve, thresholdValue) {
             color: "#243249",
             filter(item, chartData) {
               const label = chartData.datasets[item.datasetIndex]?.label;
-              return label === "Proporcion observada" || label === "Curva de sensibilidad";
+              return label === "Proporción observada" || label === "Curva de sensibilidad";
             }
           }
         }
@@ -825,7 +825,7 @@ function renderResultsChart(stats, curve, thresholdValue) {
           max: 1,
           title: {
             display: true,
-            text: "Proporcion correcta"
+            text: "Proporción correcta"
           }
         }
       }
@@ -894,7 +894,7 @@ async function persistOutcomeAndLoadRanking() {
 async function loadRankingForActiveMode() {
   if (!SUPABASE_ENABLED) {
     ui.rankingStatus.textContent = "Sin conexion";
-    ui.rankingList.innerHTML = "<p class='rank-meta'>Configura Supabase para ver ranking.</p>";
+    ui.rankingList.innerHTML = "<p class='rank-meta'>Configurá Supabase para ver ranking.</p>";
     return;
   }
 
@@ -931,7 +931,7 @@ async function loadRankingForMode(mode) {
 function renderRanking(rows) {
   if (!rows || !rows.length) {
     ui.rankingStatus.textContent = `${state.rankingViewMode}: sin registros`;
-    ui.rankingList.innerHTML = "<p class='rank-meta'>Todavia no hay resultados validos para este modo.</p>";
+    ui.rankingList.innerHTML = "<p class='rank-meta'>Todavía no hay resultados válidos para este modo.</p>";
     return;
   }
 
@@ -982,7 +982,7 @@ async function shareResults() {
   if (navigator.share) {
     try {
       await navigator.share({
-        title: "Experimento de deteccion de bordes",
+        title: "Experimento de detección de bordes",
         text: `${shareText}\n${shareUrl}`
       });
       return;
@@ -997,7 +997,7 @@ async function shareResults() {
     await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
     setSaveStatus("Resumen copiado al portapapeles.", "ok");
   } catch (error) {
-    setSaveStatus("No se pudo compartir automaticamente.", "err");
+    setSaveStatus("No se pudo compartir automáticamente.", "err");
   }
 }
 
